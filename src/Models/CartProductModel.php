@@ -2,7 +2,6 @@
 
 namespace Rennokki\Cart\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class CartProductModel extends Model
@@ -13,7 +12,7 @@ class CartProductModel extends Model
         'attributes',
     ];
     protected $casts = [
-        'attributes' => 'array',
+        'attributes' => 'object',
         'unit_price' => 'float',
     ];
     protected $dates = [
@@ -30,7 +29,7 @@ class CartProductModel extends Model
         return $this->belongsTo(config('cart.models.cart'), 'cart_id');
     }
 
-    public function totalPrice()
+    public function total()
     {
         return (float) ($this->quantity * $this->unit_price);
     }

@@ -2,7 +2,6 @@
 
 namespace Rennokki\Cart\Models;
 
-use Carbon\Carbon;
 use Illuminate\Database\Eloquent\Model;
 
 class CartModel extends Model
@@ -40,9 +39,33 @@ class CartModel extends Model
         return $this->products()->where('sku', $sku)->first();
     }
 
+    public function getProducts()
+    {
+        if ($this->isEmpty()) {
+            return [];
+        }
+
+        return $this->products()->get();
+    }
+
+    public function total()
+    {
+        if ($this->isEmpty()) {
+            return (float) 0.00;
+        }
+
+        $subtotal = (float) 0.00;
+
+        foreach ($this->products()->get() as $product) {
+            $subtotal += (float) $product->total();
+        }
+
+        return (float) $subtotal;
+    }
+
     public function addProduct($sku, $name, $unitPrice, $quantity, $attributes)
     {
-        if($this->hasProduct($sku)) {
+        if ($this->hasProduct($sku)) {
             $product = $this->getProduct($sku);
 
             $product->update([
@@ -68,7 +91,7 @@ class CartModel extends Model
 
     public function deleteProduct($sku)
     {
-        if(!$this->hasProduct($sku)) {
+        if (! $this->hasProduct($sku)) {
             return false;
         }
 
@@ -79,14 +102,14 @@ class CartModel extends Model
 
     public function updateSkuFor($sku, $newSku)
     {
-        if(!$this->hasProduct($sku)) {
+        if (! $this->hasProduct($sku) || $this->hasProduct($newSku)) {
             return false;
         }
 
         $product = $this->getProduct($sku);
 
         $product->update([
-            'sku' => $sku,
+            'sku' => $newSku,
         ]);
 
         return $product;
@@ -94,75 +117,61 @@ class CartModel extends Model
 
     public function updateNameFor($sku, $newName)
     {
-        if(!$this->hasProduct($sku)) {
+        if (! $this->hasProduct($sku)) {
             return false;
         }
 
         $product = $this->getProduct($sku);
 
-        return $product->update([
+        $product->update([
             'name' =>  $newName,
         ]);
+
+        return $product;
     }
 
     public function updateUnitPriceFor($sku, $newUnitPrice)
     {
-        if(!$this->hasProduct($sku)) {
+        if (! $this->hasProduct($sku)) {
             return false;
         }
 
         $product = $this->getProduct($sku);
 
-        return $product->update([
+        $product->update([
             'unit_price' => $newUnitPrice,
         ]);
+
+        return $product;
     }
 
     public function updateAttributesFor($sku, $newAttributes)
     {
-        if(!$this->hasProduct($sku)) {
+        if (! $this->hasProduct($sku)) {
             return false;
         }
 
         $product = $this->getProduct($sku);
 
-        return $product->update([
+        $product->update([
             'attributes' => $newAttributes,
         ]);
+
+        return $product;
     }
 
     public function updateQuantityFor($sku, $newQuantity)
     {
-        if(!$this->hasProduct($sku)) {
+        if (! $this->hasProduct($sku)) {
             return false;
         }
 
         $product = $this->getProduct($sku);
 
-        return $product->update([
+        $product->update([
             'quantity' => $newQuantity,
         ]);
-    }
 
-    public function addQuantityFor($sku, $amount)
-    {
-        if(!$this->hasProduct($sku)) {
-            return false;
-        }
-
-        $product = $this->getProduct($sku);
-
-        return $product->increment('quantity', $amount);
-    }
-
-    public function subtractQuantityFor($sku, $amount)
-    {
-        if(!$this->hasProduct($sku)) {
-            return false;
-        }
-
-        $product = $this->getProduct($sku);
-
-        return $product->decrement('quantity', $amount);
+        return $product;
     }
 }

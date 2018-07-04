@@ -37,7 +37,6 @@ class Cart extends Migration
 
             $table->timestamps();
         });
-
     }
 
     /**

@@ -2,7 +2,7 @@
 
 namespace Rennokki\Cart\Test;
 
-class CartTest extends TestCase
+class TraitTest extends TestCase
 {
     protected $user;
 
@@ -17,10 +17,7 @@ class CartTest extends TestCase
     {
         $this->assertNull($this->user->carts()->first());
         $this->assertFalse($this->user->hasCart(0));
-        $this->assertFalse($this->user->cartHasProduct(0, 0));
         $this->assertNull($this->user->getCart(0));
-        $this->assertNull($this->user->getCartProducts(0));
-        $this->assertNull($this->user->getCartProduct(0, 0));
     }
 
     public function testCreateCart()
@@ -31,83 +28,191 @@ class CartTest extends TestCase
 
         $this->assertEquals($this->user->carts()->count(), 3);
         $this->assertTrue($this->user->hasCart($cart1->id));
-        $this->assertFalse($this->user->cartHasProduct($cart1->id, 0));
+        $this->assertFalse($cart1->hasProduct(0));
         $this->assertNotNull($this->user->getCart($cart1->id));
-        $this->assertEquals(count($this->user->getCartProducts($cart1->id)), 0);
-        $this->assertNull($this->user->getCartProduct($cart1->id, 0));
+        $this->assertEquals(count($cart1->getProducts($cart1->id)), 0);
+        $this->assertNull($cart1->getProduct(0));
+    }
+
+    public function testDeleteEmptyCart()
+    {
+        $cart1 = $this->user->createCart('My First Cart');
+        $cart2 = $this->user->createCart('My Second Cart');
+        $cart3 = $this->user->createCart('My Third Cart');
+
+        $this->assertFalse($this->user->deleteCart(99));
+        $this->assertTrue($this->user->deleteCart($cart1->id));
+
+        $this->assertEquals($this->user->carts()->count(), 2);
+
+        $this->assertFalse($this->user->hasCart($cart1->id));
+        $this->assertTrue($this->user->hasCart($cart2->id));
+        $this->assertTrue($this->user->hasCart($cart3->id));
+    }
+
+    public function testDeleteCart()
+    {
+        $cart = $this->user->createCart('My First Cart');
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+
+        $this->assertFalse($this->user->deleteCart(99));
+        $this->assertTrue($this->user->deleteCart($cart->id));
+
+        $this->assertEquals($this->user->carts()->count(), 0);
+        $this->assertFalse($this->user->hasCart($cart->id));
     }
 
     public function testAddProductsToCart()
     {
         $cart = $this->user->createCart('My First Cart');
 
-        $this->assertFalse($this->user->addProductTo(0, 0, 'Skirt', 10.00, 1, ['material' => 'Cotton']));
-        $this->assertNotNull($skirt = $this->user->addProductTo($cart->id, 0, 'Skirt', 10.00, 1, ['material' => 'Cotton']));
+        $this->assertNotNull($skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']));
 
-        $this->assertTrue($this->user->cartHasProduct($cart->id, $skirt->sku));
-        $this->assertEquals(count($this->user->getCartProducts($cart->id)), 1);
-        $this->assertNotNull($this->user->getCartProduct($cart->id, $skirt->sku));
+        $this->assertEquals($skirt->sku, 0);
+        $this->assertEquals($skirt->name, 'Skirt');
+        $this->assertEquals($skirt->unit_price, 10.00);
+        $this->assertEquals($skirt->quantity, 1);
+        $this->assertEquals($skirt->attributes->material, 'Cotton');
+
+        $this->assertTrue($cart->hasProduct($skirt->sku));
+        $this->assertEquals(count($cart->getProducts($cart->id)), 1);
+        $this->assertNotNull($cart->getProduct($skirt->sku));
     }
 
     public function testDeleteProductsFromCart()
     {
         $cart = $this->user->createCart('My First Cart');
-        $skirt = $this->user->addProductTo($cart->id, 0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
 
-        $this->assertFalse($this->user->deleteProductFrom($cart->id, 99));
-        $this->assertTrue($this->user->deleteProductFrom(0, $skirt->sku));
-        $this->assertTrue($this->user->deleteProductFrom($cart->id, $skirt->sku));
+        $this->assertFalse($cart->deleteProduct(99));
+        $this->assertTrue($cart->deleteProduct($skirt->sku));
 
-        $this->assertFalse($this->user->cartHasProduct($cart->id, $skirt->sku));
-        $this->assertEquals(count($this->user->getCartProducts($cart->id)), 0);
-        $this->assertNull($this->user->getCartProduct($cart->id, $skirt->sku));
+        $this->assertFalse($cart->hasProduct($skirt->sku));
+        $this->assertEquals(count($cart->getProducts($cart->id)), 0);
+        $this->assertNull($cart->getProduct($skirt->sku));
     }
 
     public function testUpdateProductSku()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+        $jeans = $cart->addProduct(1, 'Jeans', 10.00, 1, ['material' => 'Denim']);
+
+        $this->assertFalse($cart->updateSkuFor($skirt->sku, $jeans->sku));
+        $this->assertFalse($cart->updateSkuFor($jeans->sku, $skirt->sku));
+        $this->assertFalse($cart->updateSkuFor(99, 100));
+
+        $this->assertNotNull($skirt = $cart->updateSkuFor($skirt->sku, 2));
+
+        $this->assertEquals($skirt->sku, 2);
+        $this->assertEquals($skirt->name, 'Skirt');
+        $this->assertEquals($skirt->unit_price, 10.00);
+        $this->assertEquals($skirt->quantity, 1);
+        $this->assertEquals($skirt->attributes->material, 'Cotton');
     }
 
     public function testUpdateProductName()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+
+        $this->assertFalse($cart->updateNameFor(99, 'Black Skirt'));
+
+        $this->assertNotNull($skirt = $cart->updateNameFor($skirt->sku, 'Black Skirt'));
+
+        $this->assertEquals($skirt->sku, 0);
+        $this->assertEquals($skirt->name, 'Black Skirt');
+        $this->assertEquals($skirt->unit_price, 10.00);
+        $this->assertEquals($skirt->quantity, 1);
+        $this->assertEquals($skirt->attributes->material, 'Cotton');
     }
 
     public function testUpdateProductUnitPrice()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+
+        $this->assertFalse($cart->updateUnitPriceFor(99, 15.00));
+
+        $this->assertNotNull($skirt = $cart->updateUnitPriceFor($skirt->sku, 15.00));
+
+        $this->assertEquals($skirt->sku, 0);
+        $this->assertEquals($skirt->name, 'Skirt');
+        $this->assertEquals($skirt->unit_price, 15.00);
+        $this->assertEquals($skirt->quantity, 1);
+        $this->assertEquals($skirt->attributes->material, 'Cotton');
     }
 
     public function testUpdateProductAttributes()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+
+        $this->assertFalse($cart->updateAttributesFor(99, ['materials' => ['Cotton', 'Elastan']]));
+
+        $this->assertNotNull($skirt = $cart->updateAttributesFor($skirt->sku, ['materials' => ['Cotton', 'Elastan']]));
+
+        $this->assertEquals($skirt->sku, 0);
+        $this->assertEquals($skirt->name, 'Skirt');
+        $this->assertEquals($skirt->unit_price, 10.00);
+        $this->assertEquals($skirt->quantity, 1);
+        $this->assertNotNull($skirt->attributes->materials);
+        $this->assertEquals(count($skirt->attributes->materials), 2);
     }
 
     public function testUpdateProductQuantity()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+
+        $this->assertFalse($cart->updateQuantityFor(99, 100));
+
+        $this->assertNotNull($skirt = $cart->updateQuantityFor($skirt->sku, 100));
+
+        $this->assertEquals($skirt->sku, 0);
+        $this->assertEquals($skirt->name, 'Skirt');
+        $this->assertEquals($skirt->unit_price, 10.00);
+        $this->assertEquals($skirt->quantity, 100);
+        $this->assertEquals($skirt->attributes->material, 'Cotton');
     }
 
-    public function testAddProductQuantity()
+    public function testProductTotal()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+
+        $this->assertEquals($skirt->total(), $skirt->unit_price * $skirt->quantity);
+
+        $cart->updateQuantityFor($skirt->sku, 100);
+        $this->assertEquals($skirt->total(), $skirt->unit_price * $skirt->quantity);
+
+        $cart->updateUnitPriceFor($skirt->sku, 100);
+        $this->assertEquals($skirt->total(), $skirt->unit_price * $skirt->quantity);
     }
 
-    public function testSubtractProductQuantity()
+    public function testCartTotal()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+
+        $this->assertEquals($cart->total(), 0.00);
+
+        $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+        $jeans = $cart->addProduct(1, 'Jeans', 15.00, 10, ['material' => 'Cotton']);
+
+        $this->assertEquals($cart->total(), ($skirt->unit_price * $skirt->quantity) + ($jeans->unit_price * $jeans->quantity));
     }
 
-    public function testTotalPrice()
+    public function testAddProductWhileAlreadyExisting()
     {
-        //
-        $this->assertTrue(true);
+        $cart = $this->user->createCart('My First Cart');
+
+        $skirt1 = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+        $skirt2 = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
+
+        $this->assertTrue($cart->hasProduct($skirt1->sku));
+        $this->assertTrue($cart->hasProduct($skirt2->sku));
+        $this->assertEquals(count($cart->getProducts($cart->id)), 1);
+        $this->assertNotNull($cart->getProduct($skirt1->sku));
+        $this->assertNotNull($cart->getProduct($skirt2->sku));
     }
 }

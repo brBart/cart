@@ -2,11 +2,10 @@
 
 namespace Rennokki\Cart\Test;
 
-use Orchestra\Testbench\TestCase as Orchestra;
-
-use Rennokki\Cart\Test\Models\User;
 use Rennokki\Cart\Models\CartModel;
+use Rennokki\Cart\Test\Models\User;
 use Rennokki\Cart\Models\CartProductModel;
+use Orchestra\Testbench\TestCase as Orchestra;
 
 abstract class TestCase extends Orchestra
 {
