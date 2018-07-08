@@ -42,18 +42,17 @@ class User extends Model {
 }
 ```
 
-# Benefit
+# Creating a Cart
 You can now create carts for any user. Let's create one:
 ```php
-$cart = $user->createCart('My Cart'); // returns a CartModel instance.
+$cart = $user->createCart('My Cart');
 ```
 
 With that `CartModel` instance, you can do more. You can add, remove, update product IDs (SKUs), names, attributes, quantity and unit prices.
 
+# Adding items to Cart
 Let's add our first item. It's going to be a `Skirt`, costing `15.00` (no currency involved), `5` of them, and the `material` attribute is set to `Cotton`.
 ```php
-$cart = $user->createCart('Website Cart'); // returns a CartModel instance.
-
 $skirt = $cart->addProduct('my-unique-sku', 'Skirt', 15.00, 5, ['material' => 'Cotton']); // Returns a CartProductModel instance.
 ```
 
@@ -67,11 +66,7 @@ $cart->addProduct('my-unique-sku', 'Skirt', 15.00, 5, ['material' => 'Cotton']);
 $cart->getProduct($skirt->sku)->quantity; // This will get you 10 (5+5)
 ```
 
-On each `CartProductModel` instance you can get the total price using one simple method:
-```php
-$skirt->total(); // 75.00
-```
-
+# Updating Cart products
 If you plan to update the item from `Skirt` to `Black Skirt`, you can do it likewise:
 ```php
 $skirt = $cart->updateNameFor($skirt->sku, 'Black Skirt');
@@ -84,32 +79,33 @@ $skirt = $cart->updateQuantityFor($skirt->sku, 1);
 $skirt = $cart->updateAttributesFor($skirt->sku, ['materials' => ['Cotton', 'Elastan']]);
 ```
 
-Most of the methods return `false` on failure, so check against that.
+# Getting Cart total
+On each Cart instance, you can get the total price using one simple method:
+```php
+$skirt->total(); // 75.00
+```
 
+# Getters for Cart
+```php
+$cart->getProducts(); // Returns a collection or an empty array.
+$cart->getProduct('my-sku-here'); // Retuns either null or a Product instance.
+$cart->hasProduct('my-sku-here'); // Returns true if the cart has the product.
+$cart->isEmpty(); // true, if it has no products
+```
+
+# Updating products' SKUs
 If you want to update the SKU during mid-cart, you have to keep in mind that the SKU should not exist in the cart already, otherwise it will return `false`.
-
 ```php
 $skirt = $cart->updateSkuFor($skirt->sku, 'new-sku);
 ```
 
-Deleting the product requires one line:
+# Deleting products
 ```
 $cart->deleteProduct($skirt->sku);
 ```
 
-The total in the cart is the sum of the product of the products' quantiy and unit price. This can be accessed using the `total` method within the cart:
+# Relationships
 ```php
-$cart->total();
-```
-
-You can use the following additional checkups for your efficiency:
-```php
-$cart->products(); // Relationship
-$skirt->cart(); // Relatinship
-
-$cart->getProducts(); // Returns a collection or an empty array.
-$cart->getProduct('my-sku-here'); // Retuns either null or a CartProductModel instance.
-$cart->hasProduct('my-sku-here'); // Returns true if the cart has the product.
-
-$cart->isEmpty(); // true, if it has no products
+$cart->products();
+$skirt->cart(); 
 ```
