@@ -63,7 +63,7 @@ class CartModel extends Model
         return (float) $subtotal;
     }
 
-    public function addProduct($sku, $name, $unitPrice, $quantity, $attributes)
+    public function addProduct($sku, $name, $unitPrice, $quantity, $details)
     {
         if ($this->hasProduct($sku)) {
             $product = $this->getProduct($sku);
@@ -72,7 +72,7 @@ class CartModel extends Model
                 'name' => ($product->name != $name) ? $name : $product->name,
                 'unit_price' => ($product->unit_price != $unitPrice) ? $unitPrice : $product->unit_price,
                 'quantity' => ($product->quantity != $quantity) ? ($product->quantity + $quantity) : $product->quantity,
-                'attributes' => ($product->attributes != $attributes) ? $attributes : $product->attributes,
+                'details' => ($product->details != $details) ? $details : $product->details,
             ]);
 
             return $product;
@@ -85,7 +85,7 @@ class CartModel extends Model
             'name' => $name,
             'unit_price' => $unitPrice,
             'quantity' => $quantity,
-            'attributes' => $attributes,
+            'details' => $details,
         ]));
     }
 
@@ -145,7 +145,7 @@ class CartModel extends Model
         return $product;
     }
 
-    public function updateAttributesFor($sku, $newAttributes)
+    public function updateDetailsFor($sku, $newDetails)
     {
         if (! $this->hasProduct($sku)) {
             return false;
@@ -154,7 +154,7 @@ class CartModel extends Model
         $product = $this->getProduct($sku);
 
         $product->update([
-            'attributes' => $newAttributes,
+            'details' => $newDetails,
         ]);
 
         return $product;

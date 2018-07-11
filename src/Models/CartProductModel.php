@@ -9,10 +9,10 @@ class CartProductModel extends Model
     protected $table = 'carts_products';
     protected $fillable = [
         'cart_id', 'sku', 'name', 'unit_price', 'quantity',
-        'attributes',
+        'details',
     ];
     protected $casts = [
-        'attributes' => 'object',
+        'details' => 'object',
         'unit_price' => 'float',
     ];
     protected $dates = [

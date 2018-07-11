@@ -33,7 +33,7 @@ class Cart extends Migration
             $table->float('unit_price', 9, 2);
             $table->integer('quantity');
 
-            $table->text('attributes');
+            $table->text('details');
 
             $table->timestamps();
         });

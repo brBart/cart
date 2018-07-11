@@ -72,7 +72,7 @@ class TraitTest extends TestCase
         $this->assertEquals($skirt->name, 'Skirt');
         $this->assertEquals($skirt->unit_price, 10.00);
         $this->assertEquals($skirt->quantity, 1);
-        $this->assertEquals($skirt->attributes->material, 'Cotton');
+        $this->assertEquals($skirt->details->material, 'Cotton');
 
         $this->assertTrue($cart->hasProduct($skirt->sku));
         $this->assertEquals(count($cart->getProducts($cart->id)), 1);
@@ -108,7 +108,7 @@ class TraitTest extends TestCase
         $this->assertEquals($skirt->name, 'Skirt');
         $this->assertEquals($skirt->unit_price, 10.00);
         $this->assertEquals($skirt->quantity, 1);
-        $this->assertEquals($skirt->attributes->material, 'Cotton');
+        $this->assertEquals($skirt->details->material, 'Cotton');
     }
 
     public function testUpdateProductName()
@@ -124,7 +124,7 @@ class TraitTest extends TestCase
         $this->assertEquals($skirt->name, 'Black Skirt');
         $this->assertEquals($skirt->unit_price, 10.00);
         $this->assertEquals($skirt->quantity, 1);
-        $this->assertEquals($skirt->attributes->material, 'Cotton');
+        $this->assertEquals($skirt->details->material, 'Cotton');
     }
 
     public function testUpdateProductUnitPrice()
@@ -140,24 +140,24 @@ class TraitTest extends TestCase
         $this->assertEquals($skirt->name, 'Skirt');
         $this->assertEquals($skirt->unit_price, 15.00);
         $this->assertEquals($skirt->quantity, 1);
-        $this->assertEquals($skirt->attributes->material, 'Cotton');
+        $this->assertEquals($skirt->details->material, 'Cotton');
     }
 
-    public function testUpdateProductAttributes()
+    public function testUpdateProductDetails()
     {
         $cart = $this->user->createCart('My First Cart');
         $skirt = $cart->addProduct(0, 'Skirt', 10.00, 1, ['material' => 'Cotton']);
 
-        $this->assertFalse($cart->updateAttributesFor(99, ['materials' => ['Cotton', 'Elastan']]));
+        $this->assertFalse($cart->updateDetailsFor(99, ['materials' => ['Cotton', 'Elastan']]));
 
-        $this->assertNotNull($skirt = $cart->updateAttributesFor($skirt->sku, ['materials' => ['Cotton', 'Elastan']]));
+        $this->assertNotNull($skirt = $cart->updateDetailsFor($skirt->sku, ['materials' => ['Cotton', 'Elastan']]));
 
         $this->assertEquals($skirt->sku, 0);
         $this->assertEquals($skirt->name, 'Skirt');
         $this->assertEquals($skirt->unit_price, 10.00);
         $this->assertEquals($skirt->quantity, 1);
-        $this->assertNotNull($skirt->attributes->materials);
-        $this->assertEquals(count($skirt->attributes->materials), 2);
+        $this->assertNotNull($skirt->details->materials);
+        $this->assertEquals(count($skirt->details->materials), 2);
     }
 
     public function testUpdateProductQuantity()
@@ -173,7 +173,7 @@ class TraitTest extends TestCase
         $this->assertEquals($skirt->name, 'Skirt');
         $this->assertEquals($skirt->unit_price, 10.00);
         $this->assertEquals($skirt->quantity, 100);
-        $this->assertEquals($skirt->attributes->material, 'Cotton');
+        $this->assertEquals($skirt->details->material, 'Cotton');
     }
 
     public function testProductTotal()

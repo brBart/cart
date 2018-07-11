@@ -48,7 +48,7 @@ You can now create carts for any user. Let's create one:
 $cart = $user->createCart('My Cart');
 ```
 
-With that `CartModel` instance, you can do more. You can add, remove, update product IDs (SKUs), names, attributes, quantity and unit prices.
+With that `CartModel` instance, you can do more. You can add, remove, update product IDs (SKUs), names, details, quantity and unit prices.
 
 # Adding items to Cart
 Let's add our first item. It's going to be a `Skirt`, costing `15.00` (no currency involved), `5` of them, and the `material` attribute is set to `Cotton`.
@@ -58,7 +58,7 @@ $skirt = $cart->addProduct('my-unique-sku', 'Skirt', 15.00, 5, ['material' => 'C
 
 If you add products on one another, with the same SKU, it will:
 * Update the quantity as the sum between the existing one and the one present in the method. (i.e. You have 3 in your cart, adding 2 of the same ones will get 5 in total)
-* Update any name, unit price and attributes ONLY if they are different.
+* Update any name, unit price and details ONLY if they are different.
 ```php
 $skirt = $cart->addProduct('my-unique-sku', 'Skirt', 15.00, 5, ['material' => 'Cotton']);
 $cart->addProduct('my-unique-sku', 'Skirt', 15.00, 5, ['material' => 'Cotton']);
@@ -72,11 +72,11 @@ If you plan to update the item from `Skirt` to `Black Skirt`, you can do it like
 $skirt = $cart->updateNameFor($skirt->sku, 'Black Skirt');
 ```
 
-It works the same way with quantity, unit price and attributes:
+It works the same way with quantity, unit price and details:
 ```php
 $skirt = $cart->updateUnitPriceFor($skirt->sku, 20.00);
 $skirt = $cart->updateQuantityFor($skirt->sku, 1);
-$skirt = $cart->updateAttributesFor($skirt->sku, ['materials' => ['Cotton', 'Elastan']]);
+$skirt = $cart->updateDetailsFor($skirt->sku, ['materials' => ['Cotton', 'Elastan']]);
 ```
 
 # Getting Cart total
