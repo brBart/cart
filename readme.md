@@ -50,6 +50,20 @@ $cart = $user->createCart('My Cart');
 
 With that `CartModel` instance, you can do more. You can add, remove, update product IDs (SKUs), names, details, quantity and unit prices.
 
+If you wish to add a coupon code to the cart, you can do so by calling `setCoupon()` or `updateCoupon()` within the cart:
+```php
+$cart->setCoupon('10PERCENTOFF'); // true
+$cart->updateCoupon('100PERCENTOFF'); // same thing
+
+$cart->hasCoupon(); // true
+```
+
+Removing it can be done with `deleteCoupon()`:
+```php
+$cart->deleteCoupon(); // true
+$cart->hasCoupon(); // false
+```
+
 # Adding items to Cart
 Let's add our first item. It's going to be a `Skirt`, costing `15.00` (no currency involved), `5` of them, and the `material` attribute is set to `Cotton`.
 ```php

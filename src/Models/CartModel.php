@@ -9,6 +9,7 @@ class CartModel extends Model
     protected $table = 'carts';
     protected $fillable = [
         'model_id', 'model_type', 'name',
+        'coupon_code',
     ];
     protected $dates = [
         //
@@ -27,6 +28,30 @@ class CartModel extends Model
     public function isEmpty()
     {
         return (bool) ($this->products()->count() == 0);
+    }
+
+    public function hasCoupon()
+    {
+        return (bool) ! is_null($this->coupon_code);
+    }
+
+    public function setCoupon($couponCode)
+    {
+        return $this->update([
+            'coupon_code' => $couponCode,
+        ]);
+    }
+
+    public function updateCoupon($couponCode)
+    {
+        return $this->setCoupon($couponCode);
+    }
+
+    public function deleteCoupon()
+    {
+        return $this->update([
+            'coupon_code' => null,
+        ]);
     }
 
     public function hasProduct($sku)

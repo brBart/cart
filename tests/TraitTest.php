@@ -215,4 +215,24 @@ class TraitTest extends TestCase
         $this->assertNotNull($cart->getProduct($skirt1->sku));
         $this->assertNotNull($cart->getProduct($skirt2->sku));
     }
+
+    public function testCoupon()
+    {
+        $cart = $this->user->createCart('My First Cart');
+
+        $this->assertTrue($cart->setCoupon('CouponForCart'));
+        $this->assertTrue($cart->hasCoupon());
+
+        $cart = $cart->refresh();
+        $this->assertEquals($cart->coupon_code, 'CouponForCart');
+        $this->assertTrue($cart->deleteCoupon());
+        $this->assertFalse($cart->hasCoupon());
+
+        $this->assertTrue($cart->updateCoupon('CouponForCart'));
+        $this->assertTrue($cart->hasCoupon());
+        $this->assertEquals($cart->coupon_code, 'CouponForCart');
+
+        $this->assertTrue($cart->updateCoupon('CouponForCart2'));
+        $this->assertEquals($cart->coupon_code, 'CouponForCart2');
+    }
 }

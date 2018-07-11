@@ -20,6 +20,7 @@ class Cart extends Migration
             $table->string('model_type');
 
             $table->string('name');
+            $table->string('coupon_code')->nullable();
 
             $table->timestamps();
         });
