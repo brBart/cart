@@ -110,7 +110,7 @@ $cart->isEmpty(); // true, if it has no products
 # Updating products' SKUs
 If you want to update the SKU during mid-cart, you have to keep in mind that the SKU should not exist in the cart already, otherwise it will return `false`.
 ```php
-$skirt = $cart->updateSkuFor($skirt->sku, 'new-sku);
+$skirt = $cart->updateSkuFor($skirt->sku, 'new-sku');
 ```
 
 # Deleting products
