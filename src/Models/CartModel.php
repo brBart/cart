@@ -20,21 +20,42 @@ class CartModel extends Model
         return $this->morphTo();
     }
 
+    /**
+     * Get cart products.
+     *
+     * @return hasMany Relationship with cart products.
+     */
     public function products()
     {
         return $this->hasMany(config('cart.models.cartProduct'), 'cart_id');
     }
 
+    /**
+     * Check wether the cart is empty or not.
+     *
+     * @return bool
+     */
     public function isEmpty()
     {
         return (bool) ($this->products()->count() == 0);
     }
 
+    /**
+     * Check if the cart has a coupon attached.
+     *
+     * @return bool
+     */
     public function hasCoupon()
     {
         return (bool) ! is_null($this->coupon_code);
     }
 
+    /**
+     * Attach a coupon code to the cart.
+     *
+     * @param string $couponCode The coupon code.
+     * @return bool
+     */
     public function setCoupon($couponCode)
     {
         return $this->update([
@@ -42,11 +63,22 @@ class CartModel extends Model
         ]);
     }
 
+    /**
+     * Update the cart coupon.
+     *
+     * @param string $couponCode The coupon code.
+     * @return bool
+     */
     public function updateCoupon($couponCode)
     {
         return $this->setCoupon($couponCode);
     }
 
+    /**
+     * Delete the coupon attached to the cart.
+     *
+     * @return bool
+     */
     public function deleteCoupon()
     {
         return $this->update([
@@ -54,16 +86,33 @@ class CartModel extends Model
         ]);
     }
 
+    /**
+     * Check if the cart has a product with a certain SKU.
+     *
+     * @param string $sku The product SKU.
+     * @return bool
+     */
     public function hasProduct($sku)
     {
         return (bool) ($this->products()->where('sku', $sku)->count() == 1);
     }
 
+    /**
+     * Get the product based on SKU.
+     *
+     * @param string $sku The product SKU.
+     * @return null|CartProduct The cart product.
+     */
     public function getProduct($sku)
     {
         return $this->products()->where('sku', $sku)->first();
     }
 
+    /**
+     * Get the cart products.
+     *
+     * @return null|CartProduct The cart products.
+     */
     public function getProducts()
     {
         if ($this->isEmpty()) {
@@ -73,6 +122,11 @@ class CartModel extends Model
         return $this->products()->get();
     }
 
+    /**
+     * Get the total price for the cart.
+     *
+     * @return float $subtotal The cart total
+     */
     public function total()
     {
         if ($this->isEmpty()) {
@@ -88,6 +142,16 @@ class CartModel extends Model
         return (float) $subtotal;
     }
 
+    /**
+     * Add a product to the cart.
+     *
+     * @param string $sku The product SKU.
+     * @param string $name The product name.
+     * @param float $unitPrice The unit price.
+     * @param int $quantity The quantity.
+     * @param array $details The additional details for the product.
+     * @return bool
+     */
     public function addProduct($sku, $name, $unitPrice, $quantity, $details)
     {
         if ($this->hasProduct($sku)) {
@@ -114,6 +178,12 @@ class CartModel extends Model
         ]));
     }
 
+    /**
+     * Delete a product from the cart.
+     *
+     * @param string $sku The product SKU.
+     * @return bool
+     */
     public function deleteProduct($sku)
     {
         if (! $this->hasProduct($sku)) {
@@ -125,6 +195,13 @@ class CartModel extends Model
         return $product->delete();
     }
 
+    /**
+     * Update SKU for a cart product.
+     *
+     * @param string $sku The product SKU.
+     * @param string $newSku The new product SKU.
+     * @return bool
+     */
     public function updateSkuFor($sku, $newSku)
     {
         if (! $this->hasProduct($sku) || $this->hasProduct($newSku)) {
@@ -140,6 +217,13 @@ class CartModel extends Model
         return $product;
     }
 
+    /**
+     * Update name for a cart product.
+     *
+     * @param string $sku The product SKU.
+     * @param string $newName The new product name.
+     * @return bool
+     */
     public function updateNameFor($sku, $newName)
     {
         if (! $this->hasProduct($sku)) {
@@ -155,6 +239,13 @@ class CartModel extends Model
         return $product;
     }
 
+    /**
+     * Update unit price for a cart product.
+     *
+     * @param string $sku The product SKU.
+     * @param string $newUnitPrice The new unit price.
+     * @return bool
+     */
     public function updateUnitPriceFor($sku, $newUnitPrice)
     {
         if (! $this->hasProduct($sku)) {
@@ -170,6 +261,13 @@ class CartModel extends Model
         return $product;
     }
 
+    /**
+     * Update additional details for a cart product.
+     *
+     * @param string $sku The product SKU.
+     * @param array $newDetails The new details array.
+     * @return bool
+     */
     public function updateDetailsFor($sku, $newDetails)
     {
         if (! $this->hasProduct($sku)) {
@@ -185,6 +283,13 @@ class CartModel extends Model
         return $product;
     }
 
+    /**
+     * Update the quantity for a cart product.
+     *
+     * @param string $sku The product SKU.
+     * @param int $newQuantity The new product quantity.
+     * @return bool
+     */
     public function updateQuantityFor($sku, $newQuantity)
     {
         if (! $this->hasProduct($sku)) {
