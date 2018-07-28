@@ -29,6 +29,11 @@ class CartProductModel extends Model
         return $this->belongsTo(config('cart.models.cart'), 'cart_id');
     }
 
+    public function scopeSku($query, $sku)
+    {
+        return $query->where('sku', $sku);
+    }
+
     public function total()
     {
         return (float) ($this->quantity * $this->unit_price);

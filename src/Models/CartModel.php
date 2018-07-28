@@ -105,7 +105,7 @@ class CartModel extends Model
      */
     public function getProduct($sku)
     {
-        return $this->products()->where('sku', $sku)->first();
+        return $this->products()->sku($sku)->first();
     }
 
     /**
