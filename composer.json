@@ -1,6 +1,6 @@
 {
     "name": "rennokki/cart",
-    "description": "Cart is an open source package to control over your Cart sessions for your customers.",
+    "description": "Laravel Cart is a package that helps building a cart-like system for online stores. You can store carts, products and you can add new products, update the existing ones or delete them. You can set more carts if you want to and retrieve them later since they're stored.",
     "keywords": [
         "eloquent",
         "laravel",
