@@ -9,7 +9,7 @@
 [![PayPal](https://img.shields.io/badge/PayPal-donate-blue.svg)](https://paypal.me/rennokki)
 
 # Laravel Cart
-Laravel Cart is a package that helps building a cart-like system for online stores. You can store carts, products and you can add new products, update the existing ones or delete them.
+Laravel Cart is a package that helps building a cart-like system for online stores. You can store carts, products and you can add new products, update the existing ones or delete them. You can set more carts if you want to and retrieve them later since they're stored.
 
 # Installation
 You have to install the package via Composer CLI:
@@ -65,7 +65,7 @@ $cart->hasCoupon(); // false
 ```
 
 # Adding items to Cart
-Let's add our first item. It's going to be a `Skirt`, costing `15.00` (no currency involved), `5` of them, and the `material` attribute is set to `Cotton`.
+Let's add our first item. It's going to be a `Skirt`, with a cost of `15.00` (no currency involved), `5` of them, and the `material` attribute is set to `Cotton`.
 ```php
 $skirt = $cart->addProduct('my-unique-sku', 'Skirt', 15.00, 5, ['material' => 'Cotton']); // Returns a CartProductModel instance.
 ```
@@ -99,14 +99,6 @@ On each Cart instance, you can get the total price using one simple method:
 $skirt->total(); // 75.00
 ```
 
-# Getters for Cart
-```php
-$cart->getProducts(); // Returns a collection or an empty array.
-$cart->getProduct('my-sku-here'); // Retuns either null or a Product instance.
-$cart->hasProduct('my-sku-here'); // Returns true if the cart has the product.
-$cart->isEmpty(); // true, if it has no products
-```
-
 # Updating products' SKUs
 If you want to update the SKU during mid-cart, you have to keep in mind that the SKU should not exist in the cart already, otherwise it will return `false`.
 ```php
@@ -118,8 +110,10 @@ $skirt = $cart->updateSkuFor($skirt->sku, 'new-sku');
 $cart->deleteProduct($skirt->sku);
 ```
 
-# Relationships
+# Methods for Cart
 ```php
-$cart->products();
-$skirt->cart(); 
+$cart->getProducts(); // Returns a collection or an empty array.
+$cart->getProduct('my-sku-here'); // Retuns either null or a Product instance.
+$cart->hasProduct('my-sku-here'); // Returns true if the cart has the product.
+$cart->isEmpty(); // true, if it has no products
 ```
