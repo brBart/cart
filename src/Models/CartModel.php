@@ -35,7 +35,7 @@ class CartModel extends Model
      *
      * @return bool
      */
-    public function isEmpty()
+    public function isEmpty(): bool
     {
         return (bool) ($this->products()->count() == 0);
     }
@@ -45,7 +45,7 @@ class CartModel extends Model
      *
      * @return bool
      */
-    public function hasCoupon()
+    public function hasCoupon(): bool
     {
         return (bool) ! is_null($this->coupon_code);
     }
@@ -56,7 +56,7 @@ class CartModel extends Model
      * @param string $couponCode The coupon code.
      * @return bool
      */
-    public function setCoupon($couponCode)
+    public function setCoupon(string $couponCode): bool
     {
         return $this->update([
             'coupon_code' => $couponCode,
@@ -69,7 +69,7 @@ class CartModel extends Model
      * @param string $couponCode The coupon code.
      * @return bool
      */
-    public function updateCoupon($couponCode)
+    public function updateCoupon(string $couponCode): bool
     {
         return $this->setCoupon($couponCode);
     }
@@ -79,7 +79,7 @@ class CartModel extends Model
      *
      * @return bool
      */
-    public function deleteCoupon()
+    public function deleteCoupon(): bool
     {
         return $this->update([
             'coupon_code' => null,
@@ -92,7 +92,7 @@ class CartModel extends Model
      * @param string $sku The product SKU.
      * @return bool
      */
-    public function hasProduct($sku)
+    public function hasProduct(string $sku)
     {
         return (bool) ($this->products()->where('sku', $sku)->count() == 1);
     }
@@ -103,7 +103,7 @@ class CartModel extends Model
      * @param string $sku The product SKU.
      * @return null|CartProduct The cart product.
      */
-    public function getProduct($sku)
+    public function getProduct(string $sku)
     {
         return $this->products()->sku($sku)->first();
     }
@@ -127,7 +127,7 @@ class CartModel extends Model
      *
      * @return float $subtotal The cart total
      */
-    public function total()
+    public function total(): float
     {
         if ($this->isEmpty()) {
             return (float) 0.00;
@@ -150,9 +150,9 @@ class CartModel extends Model
      * @param float $unitPrice The unit price.
      * @param int $quantity The quantity.
      * @param array $details The additional details for the product.
-     * @return bool
+     * @return bool|CartProductModel
      */
-    public function addProduct($sku, $name, $unitPrice, $quantity, $details)
+    public function addProduct(string $sku, string $name, float $unitPrice, float $quantity, array $details)
     {
         if ($this->hasProduct($sku)) {
             $product = $this->getProduct($sku);
@@ -184,7 +184,7 @@ class CartModel extends Model
      * @param string $sku The product SKU.
      * @return bool
      */
-    public function deleteProduct($sku)
+    public function deleteProduct(string $sku): bool
     {
         if (! $this->hasProduct($sku)) {
             return false;
@@ -200,9 +200,9 @@ class CartModel extends Model
      *
      * @param string $sku The product SKU.
      * @param string $newSku The new product SKU.
-     * @return bool
+     * @return bool|CartProductModel
      */
-    public function updateSkuFor($sku, $newSku)
+    public function updateSkuFor(string $sku, string $newSku)
     {
         if (! $this->hasProduct($sku) || $this->hasProduct($newSku)) {
             return false;
@@ -222,9 +222,9 @@ class CartModel extends Model
      *
      * @param string $sku The product SKU.
      * @param string $newName The new product name.
-     * @return bool
+     * @return bool|CartProductModel
      */
-    public function updateNameFor($sku, $newName)
+    public function updateNameFor(string $sku, string $newName)
     {
         if (! $this->hasProduct($sku)) {
             return false;
@@ -243,10 +243,10 @@ class CartModel extends Model
      * Update unit price for a cart product.
      *
      * @param string $sku The product SKU.
-     * @param string $newUnitPrice The new unit price.
-     * @return bool
+     * @param float $newUnitPrice The new unit price.
+     * @return bool|CartProductModel
      */
-    public function updateUnitPriceFor($sku, $newUnitPrice)
+    public function updateUnitPriceFor(string $sku, float $newUnitPrice)
     {
         if (! $this->hasProduct($sku)) {
             return false;
@@ -266,9 +266,9 @@ class CartModel extends Model
      *
      * @param string $sku The product SKU.
      * @param array $newDetails The new details array.
-     * @return bool
+     * @return bool|CartProductModel
      */
-    public function updateDetailsFor($sku, $newDetails)
+    public function updateDetailsFor(string $sku, array $newDetails)
     {
         if (! $this->hasProduct($sku)) {
             return false;
@@ -287,10 +287,10 @@ class CartModel extends Model
      * Update the quantity for a cart product.
      *
      * @param string $sku The product SKU.
-     * @param int $newQuantity The new product quantity.
-     * @return bool
+     * @param float $newQuantity The new product quantity.
+     * @return bool|CartProductModel
      */
-    public function updateQuantityFor($sku, $newQuantity)
+    public function updateQuantityFor(string $sku, float $newQuantity)
     {
         if (! $this->hasProduct($sku)) {
             return false;

@@ -20,7 +20,7 @@ trait HasCarts
      * @param string $cartId The cart id.
      * @return bool
      */
-    public function hasCart($cartId)
+    public function hasCart(string $cartId): bool
     {
         return (bool) ! is_null($this->carts()->find($cartId));
     }
@@ -31,7 +31,7 @@ trait HasCarts
      * @param string $name The cart name.
      * @return CartModel The cart model instance.
      */
-    public function createCart($name)
+    public function createCart(string $name)
     {
         $cartModel = config('cart.models.cart');
 
@@ -46,7 +46,7 @@ trait HasCarts
      * @param string $cartId The cart ID.
      * @return bool
      */
-    public function deleteCart($cartId)
+    public function deleteCart(string $cartId): bool
     {
         if (! $this->hasCart($cartId)) {
             return false;
@@ -63,7 +63,7 @@ trait HasCarts
      * @param string $cartId The cart Id.
      * @return CartModel The cart model instance.
      */
-    public function getCart($cartId)
+    public function getCart(string $cartId)
     {
         return $this->carts()->find($cartId);
     }

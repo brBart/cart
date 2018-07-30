@@ -32,7 +32,7 @@ class Cart extends Migration
             $table->string('sku');
             $table->string('name');
             $table->float('unit_price', 9, 2);
-            $table->integer('quantity');
+            $table->float('quantity', 9, 2);
 
             $table->text('details');
 

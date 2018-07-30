@@ -13,6 +13,7 @@ class CartProductModel extends Model
     ];
     protected $casts = [
         'details' => 'object',
+        'quantity' => 'float',
         'unit_price' => 'float',
     ];
     protected $dates = [
@@ -34,7 +35,7 @@ class CartProductModel extends Model
         return $query->where('sku', $sku);
     }
 
-    public function total()
+    public function total(): float
     {
         return (float) ($this->quantity * $this->unit_price);
     }
