@@ -7,17 +7,11 @@ use Illuminate\Database\Eloquent\Model;
 class CartProductModel extends Model
 {
     protected $table = 'carts_products';
-    protected $fillable = [
-        'cart_id', 'sku', 'name', 'unit_price', 'quantity',
-        'details',
-    ];
+    protected $guarded = [];
     protected $casts = [
         'details' => 'object',
         'quantity' => 'float',
         'unit_price' => 'float',
-    ];
-    protected $dates = [
-        //
     ];
 
     public function model()
